@@ -2,7 +2,7 @@ package Laboratorium;
 
 import java.io.Serializable;
 
-public interface IAsocjacja extends Serializable{
+public interface IAsocjacja{
 	
 	public <X, Y> boolean verifyInstance(X o1, Y o2);
 	

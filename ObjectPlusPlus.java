@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 public class ObjectPlusPlus extends ObjectPlus {
@@ -144,4 +145,28 @@ public class ObjectPlusPlus extends ObjectPlus {
 	    public void removeLink(IAsocjacja roleName, ObjectPlusPlus targetObject) throws Exception {
 	    	removeLink(roleName, targetObject, targetObject, 2);
 	    }
+	    
+	    public void removePart(IAsocjacja roleName, ObjectPlusPlus targetObject) {
+	    	targetObject.removeObject();
+	    	allParts.remove(targetObject);
+	    }
+
+		@Override
+		public void removeObject(){
+			links.entrySet().iterator().forEachRemaining(entry ->{
+				Map<Object, ObjectPlusPlus> objectLinks=entry.getValue();
+				
+				objectLinks.entrySet().iterator().forEachRemaining(innerEntry ->{
+					try {
+						this.removeLink(entry.getKey(), innerEntry.getValue(), innerEntry.getKey());
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				});
+				
+			});
+			super.removeObject();
+		}
+	    
+	    
 }

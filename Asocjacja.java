@@ -2,6 +2,7 @@ package Laboratorium;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Asocjacja<T extends ObjectPlusPlus,R extends ObjectPlusPlus> implements IAsocjacja {
 	private String name;
@@ -13,20 +14,22 @@ public class Asocjacja<T extends ObjectPlusPlus,R extends ObjectPlusPlus> implem
 	private static Set<Asocjacja<?,?>> associationSet= new HashSet<>();
 	
 	private Asocjacja(Class<T> class1, Class<R> class2, int maxCardinalityClass, String name) {
-		super();
 		this.name=name;
 		this.class1 = class1;
 		this.class2 = class2;
 		this.maxCardinalityClass=maxCardinalityClass;
+		
 	}
 	
 	public static <X extends ObjectPlusPlus,Y extends ObjectPlusPlus> boolean createAssociation(Class<X> class1, Class<Y> class2, int maxCardinalityClass1, int maxCardinalityClass2) {
-			
+			boolean exists=!Asocjacja.associationSet
+					.stream()
+					.filter(obj -> obj.class1.equals(class1)&&obj.class2.equals(class2)&&obj.getMaxCardinality()==maxCardinalityClass2&& obj.name==null).collect(Collectors.toList()).isEmpty();
+			if (exists) return false;
 			Asocjacja<X,Y> o=new Asocjacja<>(class1,class2, maxCardinalityClass2, null);
-			if (Asocjacja.associationSet.contains(o)) return false;
-			associationSet.add(o);
 			o.opposite= new Asocjacja<Y,X>(class2,class1, maxCardinalityClass1,null);
 			o.opposite.opposite=o;
+			associationSet.add(o);
 			associationSet.add(o.opposite);
 			return true;
 			
@@ -34,11 +37,15 @@ public class Asocjacja<T extends ObjectPlusPlus,R extends ObjectPlusPlus> implem
 	
 	public static <X extends ObjectPlusPlus,Y extends ObjectPlusPlus> boolean createAssociation(Class<X> class1, Class<Y> class2, int maxCardinalityClass1, int maxCardinalityClass2, String name, String reverseName) {
 		
+		boolean exists=!Asocjacja.associationSet
+				.stream()
+				.filter(obj -> obj.class1.equals(class1)&&obj.class2.equals(class2)&&obj.getMaxCardinality()==maxCardinalityClass2&& obj.name.equals(name)).collect(Collectors.toList()).isEmpty();
+		if (exists) return false;
 		Asocjacja<X,Y> o=new Asocjacja<>(class1,class2, maxCardinalityClass2, name);
-		if (Asocjacja.associationSet.contains(o)) return false;
-		associationSet.add(o);
 		o.opposite= new Asocjacja<Y,X>(class2,class1, maxCardinalityClass1, reverseName);
 		o.opposite.opposite=o;
+		associationSet.add(o);
+		
 		associationSet.add(o.opposite);
 		return true;
 		
@@ -87,4 +94,5 @@ public class Asocjacja<T extends ObjectPlusPlus,R extends ObjectPlusPlus> implem
 	public String toString() {
 		return "Asocjacja [class1=" + class1 + ", class2=" + class2 + ", name="+name+"]"+", Opposite Asocjacja [class1=" + opposite.class1 + ", class2=" + opposite.class2 + ", name="+opposite.name+"]";
 	}
+	
 }
